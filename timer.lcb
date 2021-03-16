@@ -25,6 +25,9 @@ property "Interval"  get mInterval  set setInterval
 metadata Interval.label is "Ineterval"
 metadata Interval.default is "1000"
 private handler setInterval(in pNumber as Number) returns nothing
+	if pNumber is mInterval then
+		return
+	end if
    put pNumber into mInterval
    redraw all
 end handler
@@ -34,6 +37,9 @@ property "Active"  get mEnabled  set setEnabled
 metadata Active.label is "enabled"
 metadata Active.default is "true"
 private handler setEnabled(in pBool as Boolean) returns nothing
+	if pBool is mEnabled then
+		return
+	end if
    put pBool into mEnabled
    if mEnabled then
    	schedule timer in (mInterval/1000) seconds
