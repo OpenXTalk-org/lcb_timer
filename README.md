@@ -2,9 +2,7 @@
 
 # go-timer
 
-[![Version](https://img.shields.io/github/tag/coreybutler/go-timer.svg)](https://github.com/coreybutler/go-timer)
-[![GoDoc](https://godoc.org/github.com/coreybutler/go-timer?status.svg)](https://godoc.org/github.com/coreybutler/go-timer)
-[![Build Status](https://travis-ci.org/coreybutler/go-timer.svg?branch=master)](https://travis-ci.org/coreybutler/go-timer)
+[![Version](https://img.shields.io/github/tag/coreybutler/lcb_timer.svg)](https://github.com/Ferruslogic/lcb_timer)
 
 Use timers and intervals like you would in JavaScript, but in Go.
 
