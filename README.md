@@ -1,3 +1,3 @@
-# lcb_timer
+# Timer Widget
 
-An LCB control to make it easier to work with time-generated events in Livecode 
+An xTension Builder control to make it easier to work with time-generated event loop in OpenXTalk or Livecode. 
