@@ -1,12 +1,25 @@
-///////////////////////////////////Tis is not a clock////////////////////////////////////
-//This simple widget allows you to create time guided code very easy, saving you 
-//from managing "send in time" and "pending messages", just put your code in 
-//"on timer" event of the script object and set the time in millisec
 
+/**
+Description:
+This is is not a clock. This simple widget allows you to create time guided code very easily, saving scripters from managing "send in time" and "pending messages". Just put your code in "on timer" event of the script object and set the time in millisec.
+This widget is similar to the 'Timer' objects from Oracle Media Objects, possibly offering some compatibility with scripts written for that xTalk dialect (MediaTalk).
 
+Name: Timer
 
-widget community.livecode.ferruslogic.timer
+Type: message
 
+Name: interval
+
+Type: property
+
+Name: active
+
+Type: property
+
+-- adding inline docs - Paul
+*/
+
+widget org.openxtalk.widget.timer -- modified identifier for OXT
 
 use com.livecode.canvas
 use com.livecode.widget
@@ -19,10 +32,8 @@ metadata preferredSize is "48,48"
 metadata svgicon is "M432.272,68.692l-20.554,35.567l71.221,41.109l20.555-35.568c5.661-9.873,2.29-22.4-7.545-28.104l-35.567-20.555 C450.542,55.443,437.977,58.814,432.272,68.692z M306,92.56c13,0,25.699,1.272,38.25,3.065V62.357l26.297-0.201V19.125C370.547,8.554,361.993,0,351.422,0h-90.643 c-10.571,0-19.125,8.554-19.125,19.125v43.031l26.096,0.201v33.268C280.301,93.832,293,92.56,306,92.56z M306,114.75c-137.312,0-248.625,111.312-248.625,248.625S168.688,612,306,612s248.625-111.312,248.625-248.625 S443.312,114.75,306,114.75z M422.185,480.229L277.312,379.933V238.34h41.808v119.689l126.86,87.827L422.185,480.229z"
 
 
-
-
 property "Interval"  get mInterval  set setInterval
-metadata Interval.label is "Ineterval"
+metadata Interval.label is "Ineterval (milliseconds):" -- explicitly state interval unit of measure
 metadata Interval.default is "1000"
 private handler setInterval(in pNumber as Number) returns nothing
 	if pNumber is mInterval then
@@ -31,7 +42,6 @@ private handler setInterval(in pNumber as Number) returns nothing
    put pNumber into mInterval
    redraw all
 end handler
-
 
 property "Active"  get mEnabled  set setEnabled
 metadata Active.label is "enabled"
@@ -47,11 +57,9 @@ private handler setEnabled(in pBool as Boolean) returns nothing
    redraw all
 end handler
 
-private variable mInterval 		as Number
+private variable mInterval as Number
 private variable mIconPath as Path
-private variable  mEnabled as Boolean
-
-
+private variable mEnabled as Boolean
 
 public handler OnSave(out rProperties as Array)
 	put the empty array into rProperties
@@ -91,35 +99,29 @@ public handler OnPaint()
 		set the left of tRect to 0
 		set the top of tRect to 0
 
-   		put rectangle path of rectangle [0,0,my width,my height] into tPath
+   	put rectangle path of rectangle [0,0,my width,my height] into tPath
 
-   		if not mEnabled then
+   	if not mEnabled then
    			set the paint of this canvas to solid paint with color [0.5,0.5,0.5]
 		end if
 
-   	  	fill text (mInterval formatted as string) at bottom of tRect on this canvas
-
+	  	fill text (mInterval formatted as string) at bottom of tRect on this canvas
 		set the top of tRect to 0
 		set the height of tRect to the height of tRect -15
 		constrainPathToRect(tRect , mIconPath)
-   	   	fill  mIconPath on this canvas
+   	fill  mIconPath on this canvas
 end handler
 
-
-
 public handler OnTimer()
+	-- add stopper for non-repeating intervals
 	if not in edit mode then
 		set property "visible" of my script object to "false"
 	end if
-
-		if  mEnabled then
-			post "Timer"
-         	schedule timer in (mInterval/1000) seconds
-		end if
-
+	if  mEnabled then
+		post "Timer"
+      	schedule timer in (mInterval/1000) seconds
+	end if
 end handler
-
-
 
 
 end widget
