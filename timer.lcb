@@ -1,5 +1,8 @@
 
 /**
+
+Name: Timer Widget
+
 Description:
 This is is not a clock. This simple widget allows you to create time guided code very easily, saving scripters from managing "send in time" and "pending messages". Just put your code in "on timer" event of the script object and set the time in millisec.
 This widget is similar to the 'Timer' objects from Oracle Media Objects, possibly offering some compatibility with scripts written for that xTalk dialect (MediaTalk).
@@ -8,72 +11,80 @@ Name: Timer
 
 Type: message
 
+Example:
+on timer
+  put the long time &return& the milliseconds
+end timer
+
+Description:
+A 'timer' message is sent to the widget repeataedly while the engine is run mode provided that the widgets 'disabled' property is false.
+The repeat time length is set in the widgets the interval property, which can be set to arbitrary amount of milliseconds.
+
 Name: interval
 
 Type: property
 
-Name: active
+Description:
+The repeat time length is set in the widgets the interval property, which can be set to arbitrary amount of milliseconds.
+
+Name: disabled
 
 Type: property
-
--- adding inline docs - Paul
 */
 
-widget org.openxtalk.widget.timer -- modified identifier for OXT
+widget org.openxtalk.widget.timer
 
 use com.livecode.canvas
 use com.livecode.widget
 use com.livecode.library.widgetutils
 
 metadata title is "Timer"
-metadata author is "FerrusLogic"
+metadata author is "FerrusLogic, Paul McClernan"
 metadata version is "1.0.0"
 metadata preferredSize is "48,48"
 metadata svgicon is "M432.272,68.692l-20.554,35.567l71.221,41.109l20.555-35.568c5.661-9.873,2.29-22.4-7.545-28.104l-35.567-20.555 C450.542,55.443,437.977,58.814,432.272,68.692z M306,92.56c13,0,25.699,1.272,38.25,3.065V62.357l26.297-0.201V19.125C370.547,8.554,361.993,0,351.422,0h-90.643 c-10.571,0-19.125,8.554-19.125,19.125v43.031l26.096,0.201v33.268C280.301,93.832,293,92.56,306,92.56z M306,114.75c-137.312,0-248.625,111.312-248.625,248.625S168.688,612,306,612s248.625-111.312,248.625-248.625 S443.312,114.75,306,114.75z M422.185,480.229L277.312,379.933V238.34h41.808v119.689l126.86,87.827L422.185,480.229z"
+private variable mIconPath as Path
 
-
+private variable mInterval as Number
 property "Interval"  get mInterval  set setInterval
 metadata Interval.label is "Ineterval (milliseconds):" -- explicitly state interval unit of measure
-metadata Interval.default is "1000"
+metadata Interval.default is "100"
 private handler setInterval(in pNumber as Number) returns nothing
 	if pNumber is mInterval then
 		return
 	end if
    put pNumber into mInterval
+	schedule timer in (mInterval/1000) seconds
    redraw all
 end handler
 
-property "Active"  get mEnabled  set setEnabled
-metadata Active.label is "enabled"
-metadata Active.default is "true"
-private handler setEnabled(in pBool as Boolean) returns nothing
-	if pBool is mEnabled then
+private variable mDisabled as Boolean
+property "disabled"  get mDisabled  set setDisabled
+metadata disabled.default is "true"
+private handler setDisabled(in pBool as Boolean) returns nothing
+	if pBool is mDisabled then
+		cancel timer
 		return
 	end if
-   put pBool into mEnabled
-   if mEnabled then
-   	schedule timer in (mInterval/1000) seconds
-   end if
-   redraw all
+  put pBool into mDisabled
+  schedule timer in (mInterval/1000) seconds
+  redraw all
 end handler
-
-private variable mInterval as Number
-private variable mIconPath as Path
-private variable mEnabled as Boolean
 
 public handler OnSave(out rProperties as Array)
 	put the empty array into rProperties
 	put mInterval  formatted as string  into rProperties["Interval"]
+	put mDisabled into rProperties["disabled"]
 end handler
 
 public handler OnLoad(in pProperties as Array)
 	put pProperties["Interval"] parsed as number into mInterval
+	put pProperties["disabled"] into mDisabled
 end handler
 
-
 public handler OnCreate()
-   put true into mEnabled
-	put 1000 into mInterval
+   put true into mDisabled
+	put 100 into mInterval
 	put path "M432.272,68.692l-20.554,35.567l71.221,41.109l20.555-35.568c5.661-9.873,2.29-22.4-7.545-28.104l-35.567-20.555 C450.542,55.443,437.977,58.814,432.272,68.692z M306,92.56c13,0,25.699,1.272,38.25,3.065V62.357l26.297-0.201V19.125C370.547,8.554,361.993,0,351.422,0h-90.643 c-10.571,0-19.125,8.554-19.125,19.125v43.031l26.096,0.201v33.268C280.301,93.832,293,92.56,306,92.56z M306,114.75c-137.312,0-248.625,111.312-248.625,248.625S168.688,612,306,612s248.625-111.312,248.625-248.625 S443.312,114.75,306,114.75z M422.185,480.229L277.312,379.933V238.34h41.808v119.689l126.86,87.827L422.185,480.229z" into mIconPath
 end handler
 
@@ -83,17 +94,21 @@ end handler
 
 public handler OnStopEditing()
 	set property "visible" of my script object to false
+	put property "disabled" of my script object into mDisabled
 	redraw all
 end handler
 
 public handler OnStartEditing()
+	variable tBool as Boolean
 	set property "visible" of my script object to true
+	schedule timer in (mInterval/1000) seconds
 	redraw all
 end handler
 
 public handler OnPaint()
 		variable tPath as Path
 		variable tRect as Rectangle
+		variable tBool as Boolean
 
 		put my rectangle into tRect
 		set the left of tRect to 0
@@ -101,8 +116,8 @@ public handler OnPaint()
 
    	put rectangle path of rectangle [0,0,my width,my height] into tPath
 
-   	if not mEnabled then
-   			set the paint of this canvas to solid paint with color [0.5,0.5,0.5]
+   	if my disabled then
+   		set the paint of this canvas to solid paint with color [0.5,0.5,0.5]
 		end if
 
 	  	fill text (mInterval formatted as string) at bottom of tRect on this canvas
@@ -114,14 +129,13 @@ end handler
 
 public handler OnTimer()
 	-- add stopper for non-repeating intervals
-	if not in edit mode then
+	if ( not in edit mode ) then
 		set property "visible" of my script object to "false"
 	end if
-	if  mEnabled then
+	if my enabled then
 		post "Timer"
-      	schedule timer in (mInterval/1000) seconds
 	end if
+	schedule timer in (mInterval/1000) seconds
 end handler
-
 
 end widget
