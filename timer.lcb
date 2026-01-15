@@ -1,12 +1,10 @@
 
 /**
-
-Name: Timer Widget
-
-Description:
 This is is not a clock. This simple widget allows you to create time guided code very easily, saving scripters from managing "send in time" and "pending messages". Just put your code in "on timer" event of the script object and set the time in millisec.
 This widget is similar to the 'Timer' objects from Oracle Media Objects, possibly offering some compatibility with scripts written for that xTalk dialect (MediaTalk).
+*/
 
+/**
 Name: Timer
 
 Type: message
